@@ -10,5 +10,9 @@ export const evaluationsService = {
   }) => {
     const response = await apiClient.post('/evaluations', data);
     return response.data;
+  },
+  getAll: async () => {
+    const response = await apiClient.get('/evaluations');
+    return response.data;
   }
 };
