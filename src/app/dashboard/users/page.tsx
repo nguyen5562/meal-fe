@@ -345,7 +345,7 @@ export default function UsersPage() {
                   {kitchens.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic">Chưa có bếp nào hoạt động.</p>
                   ) : (
-                    <div className="grid grid-cols-2 gap-3 max-h-[160px] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[160px] overflow-y-auto pr-2">
                       {kitchens.map(kitchen => (
                         <label key={kitchen.id} className="flex items-start gap-2.5 p-2.5 bg-zinc-50 border border-zinc-200 rounded-lg cursor-pointer hover:bg-zinc-100 transition-colors">
                           <input

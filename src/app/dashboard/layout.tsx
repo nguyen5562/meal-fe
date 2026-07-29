@@ -1,6 +1,6 @@
 "use client";
 
-import { SquaresFour, ForkKnife, Users, QrCode, SignOut, User as UserIcon, GridFour } from "@phosphor-icons/react";
+import { SquaresFour, ForkKnife, Users, QrCode, SignOut, User as UserIcon, GridFour, List, X } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<JwtPayload | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -50,11 +51,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-[100dvh] bg-zinc-50 flex font-sans text-zinc-900 selection:bg-zinc-900 selection:text-white">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-zinc-950/20 backdrop-blur-sm md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-zinc-50 flex-col hidden md:flex border-r border-zinc-200/60">
-        <div className="h-20 flex items-center px-8">
-          <ForkKnife weight="fill" className="w-6 h-6 text-zinc-950 mr-2.5" />
-          <span className="text-xl font-bold tracking-tight text-zinc-950">Q-Meal</span>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-zinc-50 flex-col border-r border-zinc-200/60 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex ${isMobileMenuOpen ? "translate-x-0 flex" : "-translate-x-full hidden"}`}>
+        <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-8">
+          <div className="flex items-center">
+            <ForkKnife weight="fill" className="w-6 h-6 text-zinc-950 mr-2.5" />
+            <span className="text-xl font-bold tracking-tight text-zinc-950">Q-Meal</span>
+          </div>
+          <button className="md:hidden p-2 text-zinc-400 hover:text-zinc-900" onClick={() => setIsMobileMenuOpen(false)}>
+            <X weight="bold" className="w-5 h-5" />
+          </button>
         </div>
         
         <div className="px-6 mb-4 mt-2">
@@ -69,6 +83,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98] ${
                   isActive
                     ? "bg-zinc-900 text-white shadow-sm"
@@ -103,12 +118,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden bg-white rounded-l-[2rem] md:my-2 md:mr-2 md:shadow-sm md:border md:border-zinc-200/60">
-        <header className="h-16 bg-white flex items-center justify-between px-8 md:hidden border-b border-zinc-100">
+      <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden bg-white md:rounded-l-[2rem] md:my-2 md:mr-2 md:shadow-sm md:border md:border-zinc-200/60 w-full">
+        <header className="h-16 bg-white flex items-center px-4 md:hidden border-b border-zinc-100 shrink-0">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 mr-2 text-zinc-500 hover:text-zinc-900 rounded-md">
+              <List weight="bold" className="w-6 h-6" />
+            </button>
             <span className="text-xl font-bold tracking-tight text-zinc-950">Q-Meal</span>
         </header>
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-8 md:p-12 max-w-7xl mx-auto">
+        <div className="flex-1 overflow-y-auto w-full">
+          <div className="p-4 md:p-12 max-w-7xl mx-auto w-full">
             {children}
           </div>
         </div>
