@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!currentUser) return null; // Wait for auth check
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-50 flex font-sans text-zinc-900 selection:bg-zinc-900 selection:text-white">
+    <div className="min-h-[100dvh] bg-zinc-50 flex font-sans text-zinc-900 selection:bg-zinc-900 selection:text-white print:block print:bg-white print:min-h-0">
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-zinc-50 flex-col border-r border-zinc-200/60 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex ${isMobileMenuOpen ? "translate-x-0 flex" : "-translate-x-full hidden"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-zinc-50 flex-col border-r border-zinc-200/60 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:flex print:hidden ${isMobileMenuOpen ? "translate-x-0 flex" : "-translate-x-full hidden"}`}>
         <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-8">
           <div className="flex items-center">
             <ForkKnife weight="fill" className="w-6 h-6 text-zinc-950 mr-2.5" />
@@ -118,15 +118,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden bg-white md:rounded-l-[2rem] md:my-2 md:mr-2 md:shadow-sm md:border md:border-zinc-200/60 w-full">
-        <header className="h-16 bg-white flex items-center px-4 md:hidden border-b border-zinc-100 shrink-0">
+      <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden bg-white md:rounded-l-[2rem] md:my-2 md:mr-2 md:shadow-sm md:border md:border-zinc-200/60 w-full print:block print:h-auto print:overflow-visible print:m-0 print:border-none print:shadow-none print:rounded-none">
+        <header className="h-16 bg-white flex items-center px-4 md:hidden border-b border-zinc-100 shrink-0 print:hidden">
             <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 mr-2 text-zinc-500 hover:text-zinc-900 rounded-md">
               <List weight="bold" className="w-6 h-6" />
             </button>
             <span className="text-xl font-bold tracking-tight text-zinc-950">Q-Meal</span>
         </header>
-        <div className="flex-1 overflow-y-auto w-full">
-          <div className="p-4 md:p-12 max-w-7xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto w-full print:overflow-visible">
+          <div className="p-4 md:p-12 max-w-7xl mx-auto w-full print:p-0 print:max-w-none print:mx-0">
             {children}
           </div>
         </div>

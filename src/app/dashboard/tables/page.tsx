@@ -184,22 +184,22 @@ export default function TablesPage() {
       </div>
 
       {/* Grid in ấn QR */}
-      <div className="hidden print:grid print:grid-cols-2 print:gap-12">
+      <div className="hidden print:grid print:grid-cols-2 print:gap-6 print:p-4">
         {tables.map(table => {
           const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
           return (
-            <div key={`print-${table.id}`} className="bg-white flex flex-col items-center justify-center text-center print:shadow-none print:border-2 print:border-zinc-800 print:break-inside-avoid print:p-12 print:rounded-2xl">
-              <h2 className="text-4xl font-bold tracking-tight text-zinc-950 mb-2">{table.tableName}</h2>
-              <p className="text-zinc-600 font-semibold mb-8 text-xl uppercase tracking-wider">{table.kitchen?.name}</p>
-              <div className="bg-white p-6 rounded-2xl print:border-none">
+            <div key={`print-${table.id}`} className="bg-white flex flex-col items-center justify-center text-center print:shadow-none print:border-2 print:border-zinc-300 print:break-inside-avoid print:p-8 print:rounded-xl">
+              <h2 className="text-2xl font-bold tracking-tight text-zinc-950 mb-1">{table.tableName}</h2>
+              <p className="text-zinc-600 font-semibold mb-4 text-sm uppercase tracking-wider">{table.kitchen?.name}</p>
+              <div className="bg-white p-4 rounded-xl print:border-none flex items-center justify-center">
                 <QRCodeSVG 
                   value={`${origin}/rate/${table.qrToken}`} 
-                  size={240}
+                  size={160}
                   level="H"
                   includeMargin={false}
                 />
               </div>
-              <p className="mt-8 text-lg font-medium text-zinc-500">Quét mã để đánh giá chất lượng bữa ăn</p>
+              <p className="mt-4 text-sm font-medium text-zinc-600">Quét mã để đánh giá<br/>chất lượng bữa ăn</p>
             </div>
           );
         })}
