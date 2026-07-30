@@ -11,8 +11,15 @@ export const evaluationsService = {
     const response = await apiClient.post('/evaluations', data);
     return response.data;
   },
-  getAll: async () => {
-    const response = await apiClient.get('/evaluations');
+  getAll: async (params?: {
+    kitchenId?: number;
+    tableId?: number;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const response = await apiClient.get('/evaluations', { params });
     return response.data;
   }
 };
