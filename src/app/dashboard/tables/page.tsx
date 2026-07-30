@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { tablesService } from "@/services/tables.service";
 import { getKitchens, Kitchen } from "@/services/kitchens.service";
-import { Plus, PencilSimple, Trash, X, Printer } from "@phosphor-icons/react";
+import { Plus, PencilSimple, Trash, X, Printer, CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -19,6 +19,11 @@ export default function TablesPage() {
 
   // Form State
   const [formData, setFormData] = useState({ tableName: "", kitchenId: "" });
+
+  // Filter & Pagination State
+  const [filterKitchenId, setFilterKitchenId] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const fetchData = async () => {
     setLoading(true);
@@ -97,6 +102,19 @@ export default function TablesPage() {
     window.print();
   };
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterKitchenId(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const filteredTables = tables.filter(table => {
+    if (!filterKitchenId) return true;
+    return table.kitchenId?.toString() === filterKitchenId || table.kitchen?.id?.toString() === filterKitchenId;
+  });
+
+  const totalPages = Math.ceil(filteredTables.length / itemsPerPage);
+  const paginatedTables = filteredTables.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
@@ -123,23 +141,43 @@ export default function TablesPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-zinc-200/60 shadow-sm overflow-hidden print:hidden">
+        <div className="p-4 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-50/50">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-zinc-700">Lọc theo bếp:</span>
+            <select
+              value={filterKitchenId}
+              onChange={handleFilterChange}
+              className="px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all shadow-sm min-w-[180px]"
+            >
+              <option value="">Tất cả các bếp</option>
+              {kitchens.map(k => (
+                <option key={k.id} value={k.id.toString()}>{k.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="text-sm text-zinc-500 bg-white px-3 py-1.5 rounded-lg border border-zinc-200 shadow-sm">
+            Hiển thị <span className="font-medium text-zinc-900">{filteredTables.length}</span> bàn
+          </div>
+        </div>
+
         {loading ? (
           <div className="p-12 text-center text-zinc-400 text-sm font-medium">Đang tải dữ liệu...</div>
-        ) : tables.length === 0 ? (
-          <div className="p-12 text-center text-zinc-400 text-sm font-medium">Chưa có bàn nào được tạo</div>
+        ) : filteredTables.length === 0 ? (
+          <div className="p-12 text-center text-zinc-400 text-sm font-medium">Không tìm thấy bàn nào</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-zinc-50/50 text-zinc-500 font-medium border-b border-zinc-100">
-                <tr>
-                  <th className="px-6 py-4">Tên bàn</th>
-                  <th className="px-6 py-4">Thuộc bếp</th>
-                  <th className="px-6 py-4">Mã QR</th>
-                  <th className="px-6 py-4 text-right">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 text-zinc-900">
-                {tables.map((table) => (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-zinc-50/50 text-zinc-500 font-medium border-b border-zinc-100">
+                  <tr>
+                    <th className="px-6 py-4">Tên bàn</th>
+                    <th className="px-6 py-4">Thuộc bếp</th>
+                    <th className="px-6 py-4">Mã QR</th>
+                    <th className="px-6 py-4 text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 text-zinc-900">
+                  {paginatedTables.map((table) => (
                   <tr key={table.id} className="hover:bg-zinc-50/50 transition-colors">
                     <td className="px-6 py-4 font-semibold">{table.tableName}</td>
                     <td className="px-6 py-4 text-zinc-600">{table.kitchen?.name || "—"}</td>
@@ -180,12 +218,37 @@ export default function TablesPage() {
               </tbody>
             </table>
           </div>
+          
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-zinc-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-zinc-500">
+                Trang <span className="font-medium text-zinc-900">{currentPage}</span> / <span className="font-medium text-zinc-900">{totalPages}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 text-zinc-600 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                >
+                  <CaretLeft weight="bold" className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-zinc-600 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                >
+                  <CaretRight weight="bold" className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+          </>
         )}
       </div>
 
       {/* Grid in ấn QR */}
       <div className="hidden print:grid print:grid-cols-2 print:gap-6 print:p-4">
-        {tables.map(table => {
+        {filteredTables.map(table => {
           const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
           return (
             <div key={`print-${table.id}`} className="bg-white flex flex-col items-center justify-center text-center print:shadow-none print:border-2 print:border-zinc-300 print:break-inside-avoid print:p-8 print:rounded-xl">
