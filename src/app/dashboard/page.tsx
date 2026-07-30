@@ -261,7 +261,7 @@ export default function DashboardOverview() {
                     </span>
                     {evalItem.table?.tableName && (
                       <span className="text-xs font-semibold px-2 py-0.5 bg-zinc-100 text-zinc-600 rounded-md">
-                        Bàn {evalItem.table.tableName}
+                        {evalItem.table.tableName}
                       </span>
                     )}
                     <span className="text-xs text-zinc-400 ml-auto tabular-nums">
