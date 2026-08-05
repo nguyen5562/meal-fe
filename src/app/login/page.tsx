@@ -19,6 +19,9 @@ export default function LoginPage() {
     try {
       const data = await authService.login(username, password);
       localStorage.setItem("token", data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem("refreshToken", data.refresh_token);
+      }
       toast.success("Đăng nhập thành công!");
       router.push("/dashboard");
     } catch (err: any) {
